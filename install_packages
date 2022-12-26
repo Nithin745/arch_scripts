@@ -2,7 +2,7 @@
 
 pacman -S  xdg-user-dirs xdg-utils bluez bluez-utils alsa-utils pipewire pipewire-alsa pipewire-pulse ncmpcpp alacritty i3-wm sxhkd zip unzip xclip \
   pipewire-jack rsync reflector acpi acpi_call sof-firmware acpid ntfs-3g dunst pamixer mpd unclutter libnotify rofi picom lxsession feh \
-  xorg-server xorg-xinit xorg-xkill xorg-xsetroot xorg-xbacklight xorg-xprop imagemagick mpv ffmpeg fzf i3status firefox i3lock i3blocks
+  xorg-server xorg-xinit xorg-xkill xorg-xsetroot xorg-xbacklight xorg-xprop imagemagick mpv ffmpeg fzf i3status firefox i3lock i3blocks scrot
   
 
 
@@ -15,7 +15,7 @@ systemctl --user --now enable pipewire pipewire-avb pipewire-pulse pipewire-jack
 
 # Dotfiles
 echo ".cfg" >> .gitignore
-git clone --bare <url> $HOME/.cfg
+git clone --bare https://github.com/Nithin745/dotfiles.git $HOME/.cfg
 alias config='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME'
 config config --local status.showUntrackedFiles no
 config checkout

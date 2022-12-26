@@ -5,10 +5,6 @@
 pacman -S grub efibootmgr networkmanager network-manager-applet dialog wpa_supplicant mtools dosfstools base-devel linux-lts-headers avahi \
   bash-completion openssh os-prober man-db unrar p7zip sed awk intel-ucode
 
-timedatectl set-timezone Asia/Kolkata
-hwclock --systohc
-echo "LANG=en_US.UTF-8" > /etc/locale.conf
-echo "KEYMAP=us" > /etc/vconsole.conf
 echo "Hostname: "
 read hostname
 echo $hostname > /etc/hostname

@@ -1,0 +1,24 @@
+#!/bin/bash
+
+# After entering arch-chroot
+
+pacman -S grub efibootmgr networkmanager network-manager-applet dialog wpa_supplicant mtools dosfstools base-devel linux-lts-headers avahi \
+  bash-completion openssh os-prober man-db unrar p7zip sed awk intel-ucode
+
+timedatectl set-timezone Asia/Kolkata
+hwclock --systohc
+echo "LANG=en_US.UTF-8" > /etc/locale.conf
+echo "KEYMAP=us" > /etc/vconsole.conf
+echo "Hostname: "
+read hostname
+echo $hostname > /etc/hostname
+echo "127.0.0.1       localhost" >> /etc/hosts
+echo "::1             localhost" >> /etc/hosts
+echo "127.0.1.1       $hostname.localdomain $hostname" >> /etc/hosts
+
+systemctl enable NetworkManager
+systemctl enable avahi-daemon
+systemctl enable bluetooth
+systemctl enable cups.service
+systemctl enable sshd
+systemctl enable systemd-timesyncd

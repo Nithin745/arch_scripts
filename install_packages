@@ -1,0 +1,24 @@
+#!/bin/bash
+
+pacman -S  xdg-user-dirs xdg-utils bluez bluez-utils alsa-utils pipewire pipewire-alsa pipewire-pulse ncmpcpp alacritty i3-wm sxhkd zip unzip xclip \
+  pipewire-jack rsync reflector acpi acpi_call sof-firmware acpid ntfs-3g dunst pamixer mpd unclutter libnotify rofi picom lxsession feh \
+  xorg-server xorg-xinit xorg-xkill xorg-xsetroot xorg-xbacklight xorg-xprop imagemagick mpv ffmpeg fzf i3status firefox i3lock i3blocks
+  
+
+
+# systemctl enable tlp # You can comment this command out if you didn't install tlp, see above
+systemctl enable reflector.timer
+systemctl enable fstrim.timer
+systemctl enable acpid
+
+systemctl --user --now enable pipewire pipewire-avb pipewire-pulse pipewire-jack pipewire-alsa
+
+# Dotfiles
+echo ".cfg" >> .gitignore
+git clone --bare <url> $HOME/.cfg
+alias config='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME'
+config config --local status.showUntrackedFiles no
+config checkout
+ln -s ~/.config/x11/xinitrc .xinitrc
+ln -s ~/.config/bash/bashrc .bashrc
+ln -s ~/.config/bash/bash_profile .bash_profile

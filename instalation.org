@@ -1,0 +1,92 @@
+#+title: Arch Instalation
+#+author: Nithin
+#+category: Linux
+
+* Create new Partition (Not needed if you are just re-installing)
+
+  #+begin_src bash
+  #!/bin/bash
+
+  fdisk /dev/sdx # change it the the correct disk
+  #+end_src
+
+** EFI Partition
+    
+   1. Press `n` to create your first partition, this is for EFI boot
+      - For partision number use default
+      - For first sector use default.
+      - For last sector give +500M
+   2. Press `t` to select the type and select `1` which is EFI partition.
+
+** Root/Main Partition
+
+   1. Press `n` to create your second partition, this is for root/home partition
+      - For partition number use default.
+      - For first sector use default.
+      - For last sector default, which is all remaining freespace
+   2. Press `t` to select the type and set to default LinuxFileSystem
+
+** After above steps press `w` to write changes to the disk.
+
+* Formating the Partitions
+
+  #+begin_src bash
+  mkfs.fat -F32 /dev/sdx1
+  mkfs.btrfs /dev/sdx2
+  #+end_src
+
+* Encryption (optional)
+
+* Btrfs Mount
+  1. Mount the root partition to `/mnt`
+  #+begin_src bash
+  mount /dev/sdx2 /mnt
+  cd /mnt
+  btrfs subvolume create @ # This is for root
+  btrfs subvolume create @home # This is for home
+  cd
+  umount /mnt
+  mount -o noatime,space_cache=v2,compress=zstd,ssd,discard=async,subvol=@ /dev/sdx2 /mnt
+  mkdir /mnt/home
+  mkdir /mnt/boot
+  mount -o noatime,space_cache=v2,compress=zstd,ssd,discard=async,subvol=@home /dev/sdx2 /mnt/home
+  mount /dev/sdx1 /mnt/boot/EFI
+  #+end_src
+
+* Install Arch linux
+  #+begin_src bash
+  pacman --noconfirm -Sy archlinux-keyring
+  pacstrap -K /mnt base linux-lts linux-lts-headers linux-firmware git nvim intel-ucode
+  genfstab -U /mnt >> /mnt/etc/fstab
+  arch-chroot /mnt
+  passwd # For root pass
+  useradd -m -g users -G wheel nithin
+  passwd nithin # For nithin user
+  # from here make it as script
+  echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen
+  locale-gen
+  echo "LANG=en_US.UTF-8" > /etc/locale.conf
+  timedatectl set-timezone Asia/Kolkata
+  hwclock --systohc
+  echo "Hostname: "
+  read hostname
+  echo $hostname > /etc/hostname
+  echo "127.0.0.1       localhost" >> /etc/hosts
+  echo "::1             localhost" >> /etc/hosts
+  echo "127.0.1.1       $hostname.localdomain $hostname" >> /etc/hosts
+
+  nvim /etc/mkinitcpio.conf # Add btrfs to the module array
+  mkinitcpio -p linux-lts
+  #+end_src
+
+* Grub Install
+  #+begin_src bash
+  pacman -S grub efibootmgr base-devel os-prober
+  grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=GRUB --recheck
+  cp /usr/share/locale/en\@quot/LC_MESSAGES/grub.mo /boot/grub/locale/en.mo
+  grub-mkconfig -o /boot/grub/grub.cfg
+  #+end_src
+
+* At last
+  1. umount -a
+
